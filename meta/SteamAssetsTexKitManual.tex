@@ -1,0 +1,223 @@
+% To build this manual, you will need the VI library: https://github.com/nekostein/nekostein-vi
+
+\documentclass[11pt,a4paper]{report}
+\input{_dist/libvi/latex/ns-report.tex}
+\usepackage{nicefrac}
+
+\providecommand{\colorhref}[2]{\textcolor{black!20!blue!80!green}{\href{#1}{#2}}}
+\hypersetup{pdftitle={Steam Assets TeX Kit User Manual}}
+
+\begin{document}
+\nsreportcover{\today}{Neruthes}{Steam Assets TeX Kit\\User Manual}{Nekostein HQ}{For Public Release}
+\sffamily
+
+
+
+
+\chapter{Introduction}
+Producing a series of store assets with mandated specific dimensions can introduce a significant mental overhead.
+If you are familiar with concepts like dependency trees and functional programming,
+you might envision a more efficient process where a minor change in the logo automatically updates all store assets that depend on it.
+Imagine a scenario where a simple modification to the logo seamlessly propagates across all associated assets,
+streamlining the design process and ensuring consistency throughout.
+This automated synchronization could not only enhance productivity
+but also contribute to a more harmonized and efficient workflow.
+
+
+We at Nekostein invented a LaTeX-based internal workflow to generate store assets for Steam right before we published our
+\colorhref{https://store.steampowered.com/app/2610000}{first store page}
+\footnote{Game title: KumaWelt 1: Honey Frontier.}
+on Steam.
+This document is the manual of the open-source toolkit which is abstracted from the internal workflow,
+which resides in a large repository where all non-code stuff
+\footnote{Non-code stuff: Branding assets, legal documents, marketing materials, Steam keys, videos splashes, etc.}
+of the project is managed.
+
+We assume that you are working on a modern GNU/Linux desktop, or using an OS with similar capabilities.
+For mainstream desktop user who prefer Windows PC,
+the workflow described in this manual could unnecessary.
+But if you insist, try using this toolkit inside a Debian WSL2 environment.
+
+This manual is designed for users working on a modern GNU/Linux desktop or a system with similar capabilities.
+For Windows PC users who prefer a mainstream desktop environment,
+the workflow outlined in this guide may not be directly applicable.
+However, if you wish to proceed on a Windows system,
+you can explore using this toolkit within a Debian WSL2 environment.
+If you are unfamiliar with WSL2,
+consult Microsoft official documentation.
+
+
+\section{Dependencies}
+Before you start, make sure that you have installed the following dependencies on your machine.
+
+\begin{itemize}
+	\item \textbf{TeX Live}\\
+	      We will use \texttt{xelatex} command to compile LaTeX files into PDFs.\\
+	      \colorhref{https://tug.org/texlive/quickinstall.html}{https://tug.org/texlive/quickinstall.html}
+
+	\item \textbf{Poppler}\\
+	      This toolkit is used to convert PDFs to images.\\
+	      \colorhref{https://poppler.freedesktop.org/}{https://poppler.freedesktop.org/}
+\end{itemize}
+
+\section{Download Files}
+
+This repository is available on GitHub at the following URL.
+
+\begin{center}
+	\colorhref{https://github.com/nekostein/steam-assets-texkit}{https://github.com/nekostein/steam-assets-texkit}
+\end{center}
+
+You may simply download the ZIP archive. You will hardly want to fetch from the upstream later.
+
+
+
+\chapter{Prepare Components}
+
+\section{Download Example Components}
+You can run the following command to have a quick overview, before using your own components.
+
+\begin{center}
+	\ttfamily ./make.sh steam
+\end{center}
+
+\section{Background (bg.png)}
+\begin{minipage}{\linewidth}
+	\center\sffamily
+	\includegraphics[width=0.85\linewidth]{components/bg.png}\par
+	\small\itshape
+	Example component: bg.png\\
+	\copyright~Alessio Soggetti (via \colorhref{https://unsplash.com/photos/view-of-mountain-PdGBci-4jR8}{Unsplash})
+\end{minipage}
+
+You should prepare some generic empty background image and save to ``/pic/bg.png''.
+
+1920x1080 should be a good size.
+Use the 16:9 ratio unless you feel good with manually adjusting a few parameters for absolute positioning.
+
+This background image can be concept art or screenshot.
+Make sure that its elements and colors are simple, otherwise your logos will not be legible.
+
+\section{Large Logo (logo1.png)}
+\begin{minipage}{\linewidth}
+	\center\sffamily
+	\colorbox{white!75!gray}{\includegraphics[width=0.5\linewidth]{components/logo1.png}}\par
+	\small\itshape
+	Example component: logo1.png
+\end{minipage}
+
+
+This file should be a transparent PNG.
+For best compatibility, a horizontal logo is preferable.
+The aspect ratio should be around 1.25:1 to 2.5:1.
+
+\section{Small Logo (logo2.png)}
+\begin{minipage}{\linewidth}
+	\center\sffamily
+	\colorbox{white!75!gray}{\includegraphics[width=0.5\linewidth]{components/logo2.png}}\par
+	\small\itshape
+	Example component: logo2.png
+\end{minipage}
+
+You might want to use a different logo image in smaller assets for better legibility.
+Typically, a solid drop shadow (like outline) behind the main shape will be good.
+In CSS terms: ``text-shadow: rgba(0,0,0,0.5) 1px 1px 0px''.
+
+
+
+
+
+\chapter{Generating Output Images}
+
+\section{The Shell Command}
+You can run the following command to build all images.
+
+\begin{center}
+	\ttfamily ./make.sh steam
+\end{center}
+
+\section{Magic Explained}
+If we set document paper width to 300bp and convert the produced PDF to PNG using 72 DPI,
+the PNG will be exactly 300px wide.
+
+BP is a length unit defined as $\nicefrac{1}{72}$ inch.
+TeX originally defined 1 PT as $\nicefrac{1}{72.27}$ inch,
+but later Adobe appropriated the word with a different definition: 1 PT = $\nicefrac{1}{72}$ inch.
+TeX later added the new unit $\nicefrac{1}{72}$ inch for compatibility, but a different name ``bp'' is assigned.
+
+
+
+
+
+
+\chapter{Example Outputs}
+\newlength{\tmpoutputimgwidth}
+\providecommand{\exampleOutput}[4]{
+	% argv: title, width, height, path
+	\setlength{\tmpoutputimgwidth}{{#2}pt}
+	\begin{minipage}{\linewidth}
+		\center
+		\includegraphics[width=0.41\tmpoutputimgwidth]{output-steam/#4.png}\par
+		\small\itshape
+		#1 (#2{*}#3)\par
+	\end{minipage}\par\vskip 0pt plus 100pt\vfill
+}
+
+\exampleOutput{Main Capsule}{616}{353}{main-capsule}
+\exampleOutput{Header Capsule}{460}{215}{header-capsule}
+\exampleOutput{Small Capsule}{321}{87}{small-capsule}
+\exampleOutput{Vertical Capsule}{374}{448}{vertical-capsule}
+\exampleOutput{Library Capsule}{600}{900}{library-capsule}
+
+
+
+
+
+
+\chapter{Tweaking Positions}
+
+If you want to manually tweak the positioning things,
+you may dive into the ``steam/*.tex'' files to adjust length numbers.
+
+
+
+
+
+
+\chapter{Afterwords}
+
+\section{Obtaining This Manual}
+You should be able to get this manual from either of the following URLs:
+
+\begin{itemize}
+	\item \colorhref{https://oss-r2.neruthes.xyz/keep/steam-assets-texkit/SteamAssetsTexKitManual.pdf--802c4c2e158a3a0a00a045783119dd0b.pdf}{Link 1}
+	\item \colorhref{https://pub-714f8d634e8f451d9f2fe91a4debfa23.r2.dev/keep/steam-assets-texkit/SteamAssetsTexKitManual.pdf--802c4c2e158a3a0a00a045783119dd0b.pdf}{Link 2}
+\end{itemize}
+
+
+\section{Ways To Support Us}
+\begin{itemize}
+	\item Wishlist \colorhref{https://nekoste.in/+buyKW1}{KumaWelt 1: Honey Frontier} on Steam.
+	\item Star \colorhref{https://github.com/nekostein/steam-assets-texkit}{this repository} on GitHub.
+	\item Make a \colorhref{https://nekostein.com/misc/donate}{donation}.
+\end{itemize}
+
+
+
+
+
+
+
+
+\clearpage
+\pagestyle{empty}
+\leavevmode
+\vfill
+\small
+Copyright \copyright~2023-2024 Nekostein. All rights reserved.
+
+The word mark ``KumaWelt'' is an unregistered mark used by Nekostein
+for trademark purposes in commercial activities.
+\end{document}
+
+
